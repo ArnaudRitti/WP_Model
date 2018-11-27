@@ -747,7 +747,19 @@ Abstract Class WP_Model implements JsonSerializable
 			if(!empty($this->protected) && !in_array($attribute, $this->protected)){
 				// Do not add to $model
 			}else{
-				$model[$attribute] = $this->$attribute;
+				if(is_array($this->attribute)){
+					if(!empty($this->attribute) && is_a($this->attribute[0], self)){
+						$model[$attribute] = array_map(function( $modelInstance ){
+							return $modelInstance->toArray();
+						}, $this->attribute);
+					}
+				}
+				else if(is_a($this->attribute, self)) {
+					$model[$attribute] = $this->$attribute->toArray();
+				}
+				else{
+					$model[$attribute] = $this->$attribute;
+				}
 			}
 		}
 
